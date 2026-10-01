@@ -12,11 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install requests
-      - run: python today.py
+      - run: sudo apt-get install -y libcurl4-openssl-dev
+      - run: g++ -std=c++20 -O2 today.cpp -o today -lcurl
+      - run: ./today
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           USER_NAME: ${{ github.repository_owner }}
