@@ -16,9 +16,9 @@
 <tspan x="360" y="276" class="d">. </tspan><tspan class="k">Telegram:</tspan><tspan class="d"> ............................ </tspan><tspan class="v">@your_username</tspan>
 <tspan x="360" y="300" class="d">. </tspan><tspan class="k">Email:</tspan><tspan class="d"> .............................. </tspan><tspan class="v">you@example.com</tspan>
 <tspan x="360" y="348" class="h">- GitHub Stats ---------------------------------------</tspan>
-<tspan x="360" y="372" class="d">. </tspan><tspan class="k">Repos:</tspan><tspan class="d" id="repo_data_dots"> ........................................... </tspan><tspan class="v" id="repo_data" data-len="46">0</tspan>
+<tspan x="360" y="372" class="d">. </tspan><tspan class="k">Repos:</tspan><tspan class="d" id="repo_data_dots"> ........................................... </tspan><tspan class="v" id="repo_data" data-len="46">1</tspan>
 <tspan x="360" y="396" class="d">. </tspan><tspan class="k">Stars:</tspan><tspan class="d" id="star_data_dots"> ........................................... </tspan><tspan class="v" id="star_data" data-len="46">0</tspan>
-<tspan x="360" y="420" class="d">. </tspan><tspan class="k">Contributions:</tspan><tspan class="d" id="commit_data_dots"> ................................... </tspan><tspan class="v" id="commit_data" data-len="38">0</tspan>
+<tspan x="360" y="420" class="d">. </tspan><tspan class="k">Contributions:</tspan><tspan class="d" id="commit_data_dots"> .................................. </tspan><tspan class="v" id="commit_data" data-len="38">12</tspan>
 <tspan x="360" y="444" class="d">. </tspan><tspan class="k">Followers:</tspan><tspan class="d" id="follower_data_dots"> ....................................... </tspan><tspan class="v" id="follower_data" data-len="42">0</tspan>
 </text>
 </svg>
