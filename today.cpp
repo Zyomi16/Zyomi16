@@ -421,17 +421,25 @@ static std::string thousands(long long v) {
     return negative ? "-" + out : out;
 }
 
-// Replace the text between `anchor` and the next '<'. Mirrors re.sub on `[^<]*`.
-static std::string replace_between(const std::string& svg, const std::string& anchor,
-                                   const std::string& replacement) {
-    const std::size_t at = svg.find(anchor);
-    if (at == std::string::npos)
-        throw std::runtime_error("set_value: anchor not found: " + anchor);
-    const std::size_t start = at + anchor.size();
-    const std::size_t end = svg.find('<', start);
-    if (end == std::string::npos)
-        throw std::runtime_error("set_value: no closing '<' after: " + anchor);
-    return svg.substr(0, start) + replacement + svg.substr(end);
+// Replace the text between every occurrence of `anchor` and the next '<'.
+// Python's re.sub has no count limit, so it rewrites all occurrences —
+// `svg.find` alone would only ever patch the first.
+static std::string replace_all_between(const std::string& svg, const std::string& anchor,
+                                      const std::string& replacement) {
+    std::string out = svg;
+    std::size_t at = 0;
+    bool found = false;
+    while ((at = out.find(anchor, at)) != std::string::npos) {
+        found = true;
+        const std::size_t start = at + anchor.size();
+        const std::size_t end = out.find('<', start);
+        if (end == std::string::npos)
+            throw std::runtime_error("set_value: no closing '<' after: " + anchor);
+        out = out.substr(0, start) + replacement + out.substr(end);
+        at = start + replacement.size();
+    }
+    if (!found) throw std::runtime_error("set_value: anchor not found: " + anchor);
+    return out;
 }
 
 static void set_value(std::string& svg, const std::string& elem_id, const std::string& value) {
@@ -443,17 +451,33 @@ static void set_value(std::string& svg, const std::string& elem_id, const std::s
     const std::size_t quote = svg.find('"', digits_at);
     if (quote == std::string::npos)
         throw std::runtime_error("set_value: unterminated data-len for " + elem_id);
+    // Python's re.search takes the first occurrence for the width, same here.
     const long avail = std::stol(svg.substr(digits_at, quote - digits_at));
 
     const long dots_n = std::max(1L, avail - static_cast<long>(value.size()) - 2);
     const std::string dots = " " + std::string(static_cast<std::size_t>(dots_n), '.') + " ";
 
-    // Build both anchors before mutating: the dots replacement changes svg's length.
-    const std::string dots_anchor = "id=\"" + elem_id + "_dots\">";
-    const std::string value_anchor = id_anchor + svg.substr(digits_at, quote - digits_at) + "\">";
+    svg = replace_all_between(svg, "id=\"" + elem_id + "_dots\">", dots);
 
-    svg = replace_between(svg, dots_anchor, dots);
-    svg = replace_between(svg, value_anchor, value);
+    // Each occurrence may carry its own data-len, matching Python's `data-len="\d+"`.
+    std::string out = svg;
+    std::size_t pos = 0;
+    bool found = false;
+    while ((pos = out.find(id_anchor, pos)) != std::string::npos) {
+        found = true;
+        const std::size_t d = pos + id_anchor.size();
+        const std::size_t q = out.find('"', d);
+        if (q == std::string::npos)
+            throw std::runtime_error("set_value: unterminated data-len for " + elem_id);
+        const std::size_t start = q + 2;  // past '">'
+        const std::size_t end = out.find('<', start);
+        if (end == std::string::npos)
+            throw std::runtime_error("set_value: no closing '<' after: " + elem_id);
+        out = out.substr(0, start) + value + out.substr(end);
+        pos = start + value.size();
+    }
+    if (!found) throw std::runtime_error("set_value: anchor not found: " + id_anchor);
+    svg = out;
 }
 
 static void set_value(std::string& svg, const std::string& elem_id, long long value) {
